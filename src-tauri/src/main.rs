@@ -26,7 +26,7 @@ async fn start_julia_service(state: tauri::State<'_, JuliaProcessState>) -> Resu
     if julia_process.is_none() {
         // 在当前线程中创建进程，然后异步运行它
         let child = Command::new("julia")
-            .arg("--project=.")
+            .arg("--project=./src-julia")
             .arg("src-julia/julia-server.jl")
             .spawn()
             .expect("failed to start Julia service");

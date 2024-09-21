@@ -2,6 +2,7 @@
 // This starter template is using Vue 3 <script setup> SFCs
 // Check out https://vuejs.org/api/sfc-script-setup.html#script-setup
 import Greet from "./components/Greet.vue";
+import JuliaControl from "./components/JuliaControl.vue"; // 引入新的 Julia 控制组件
 </script>
 
 <template>
@@ -23,6 +24,8 @@ import Greet from "./components/Greet.vue";
     <p>Click on the Tauri, Vite, and Vue logos to learn more.</p>
 
     <Greet />
+    <!-- 调用 Julia 控制组件 -->
+    <JuliaControl />
   </div>
 </template>
 

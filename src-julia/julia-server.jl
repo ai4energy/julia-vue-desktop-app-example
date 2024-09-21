@@ -2,6 +2,24 @@ using Oxygen
 using HTTP
 using JSON3
 
+const CORS_HEADERS = [
+    "Access-Control-Allow-Origin" => "*",
+    "Access-Control-Allow-Headers" => "*",
+    "Access-Control-Allow-Methods" => "POST, GET, OPTIONS"
+]
+
+function CorsMiddleware(handler)
+    return function (req::HTTP.Request)
+        # println("CORS middleware")
+        # determine if this is a pre-flight request from the browser
+        if HTTP.method(req) ∈ ["POST", "GET", "OPTIONS"]
+            return HTTP.Response(200, CORS_HEADERS, HTTP.body(handler(req)))
+        else
+            return handler(req) # passes the request to the AuthMiddleware
+        end
+    end
+end
+
 # 定义主要的路由函数，返回帮助信息
 function main_help(req::HTTP.Request)
     return "using /ping to check the health of the API."
@@ -23,8 +41,8 @@ end
 function add_post(req::HTTP.Request)
     # 解析 JSON 请求体
     data = JSON3.read(String(req.body))
-    x = parse(Float64, data["x"])
-    y = parse(Float64, data["y"])
+    x = data["x"] isa Float64 ? data["x"] : parse(Float64, data["x"])
+    y = data["y"] isa Float64 ? data["y"] : parse(Float64, data["y"])
     return string(x + y)  # 返回计算结果作为字符串
 end
 
@@ -46,7 +64,7 @@ end
 # 主函数，启动服务器
 function julia_main()::Cint
     InitRouter()
-    Oxygen.serve(host="0.0.0.0", port=19801, show_banner=false)
+    Oxygen.serve(host="0.0.0.0", port=19801, show_banner=false,middleware=[CorsMiddleware])
     return 0
 end
 
